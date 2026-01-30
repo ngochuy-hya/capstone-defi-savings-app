@@ -1,0 +1,443 @@
+@use '../../styles/variables.scss' as *;
+
+.plans {
+  min-height: 100vh;
+  padding-bottom: $spacing-16;
+}
+
+// =============== HEADER (LIGHT THEME) ===============
+.header {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%);
+  padding: $spacing-16 $spacing-6;
+  border-bottom: 1px solid $color-border;
+
+  @media (max-width: $breakpoint-md) {
+    padding: $spacing-12 $spacing-4;
+  }
+}
+
+.headerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-4;
+  font-size: clamp($text-3xl, 4vw, $text-5xl);
+  font-weight: $font-bold;
+  color: $color-text;
+  margin-bottom: $spacing-4;
+
+  svg {
+    color: var(--accent-secondary);
+  }
+}
+
+.subtitle {
+  font-size: $text-lg;
+  color: $color-text-secondary;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+// =============== CONTAINER ===============
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $spacing-12 $spacing-6;
+
+  @media (max-width: $breakpoint-md) {
+    padding: $spacing-8 $spacing-4;
+  }
+}
+
+// =============== LOADING & EMPTY STATES ===============
+.loading,
+.empty,
+.notConnected {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-20;
+  text-align: center;
+  gap: $spacing-4;
+
+  svg {
+    color: $primary-500;
+  }
+
+  h2, h3 {
+    font-size: $text-3xl;
+    font-weight: $font-bold;
+    color: $color-text;
+    margin: 0;
+  }
+
+  p {
+    font-size: $text-lg;
+    color: $color-text-secondary;
+    margin: 0;
+  }
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid $color-border;
+  border-top-color: $primary-600;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+// =============== PLANS GRID ===============
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: $spacing-6;
+  margin-bottom: $spacing-12;
+
+  @media (max-width: $breakpoint-sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// =============== PLAN CARD (LIGHT THEME) ===============
+.card {
+  position: relative;
+  padding: $spacing-8;
+  background: $bg-glass;
+  border: 2px solid $color-border;
+  border-radius: $radius-2xl;
+  transition: all $transition-base;
+  animation: fadeInUp 0.6s $ease-out-expo backwards;
+  box-shadow: $shadow-md;
+
+  &:hover {
+    transform: translateY(-8px);
+    border-color: var(--accent-soft-border);
+    box-shadow: 0 12px 28px rgba(99, 102, 241, 0.15), $shadow-xl;
+  }
+
+  &.selected {
+    border-color: $primary-500;
+    background: linear-gradient(145deg, rgba(99, 102, 241, 0.04), rgba(168, 85, 247, 0.02));
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
+  }
+}
+
+.badge {
+  position: absolute;
+  top: $spacing-4;
+  right: $spacing-4;
+  display: flex;
+  align-items: center;
+  gap: $spacing-1;
+  padding: $spacing-1 $spacing-3;
+  background: $gradient-success;
+  border-radius: $radius-full;
+  color: white;
+  font-size: $text-xs;
+  font-weight: $font-semibold;
+  box-shadow: $shadow-md;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-4;
+  margin-bottom: $spacing-6;
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  background: $gradient-primary;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-lg;
+
+  svg {
+    color: white;
+  }
+}
+
+.cardTitle {
+  font-size: $text-2xl;
+  font-weight: $font-bold;
+  color: $color-text;
+  margin: 0;
+}
+
+.cardSubtitle {
+  font-size: $text-sm;
+  color: $color-text-secondary;
+  margin: 0;
+  font-weight: 500;
+}
+
+// =============== APR DISPLAY ===============
+.apr {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: $spacing-2;
+  padding: $spacing-6 0;
+  margin-bottom: $spacing-6;
+  border-top: 1px solid $color-border;
+  border-bottom: 1px solid $color-border;
+}
+
+.aprValue {
+  font-size: $text-5xl;
+  font-weight: $font-black;
+  background: $gradient-primary;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.aprLabel {
+  font-size: $text-lg;
+  color: $color-text-secondary;
+  font-weight: $font-medium;
+}
+
+// =============== DETAILS ===============
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+  margin-bottom: $spacing-6;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-3;
+  background: $bg-secondary;
+  border-radius: $radius-lg;
+  border: 1px solid $color-border;
+}
+
+.detailLabel {
+  display: flex;
+  align-items: center;
+  gap: $spacing-2;
+  font-size: $text-sm;
+  color: $color-text-secondary;
+  font-weight: 600;
+
+  svg {
+    color: $primary-500;
+  }
+}
+
+.detailValue {
+  font-size: $text-sm;
+  font-weight: $font-semibold;
+  color: $color-text;
+  font-weight: 700;
+}
+
+// =============== ESTIMATE ===============
+.estimate {
+  margin-top: $spacing-6;
+  padding: $spacing-4;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(16, 185, 129, 0.05));
+  border: 1.5px solid $primary-300;
+  border-radius: $radius-lg;
+  margin-bottom: $spacing-6;
+  box-shadow: $shadow-sm;
+}
+
+.estimateRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $spacing-2 0;
+  font-size: $text-sm;
+  color: $color-text-secondary;
+
+  strong {
+    color: $color-text;
+    font-size: $text-base;
+  }
+
+  &.total {
+    margin-top: $spacing-2;
+    padding-top: $spacing-3;
+    border-top: 1px solid $primary-500;
+
+    strong {
+      font-size: $text-xl;
+      background: $gradient-primary;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+}
+
+.success {
+  color: $success-500 !important;
+}
+
+// =============== DEPOSIT FORM (MODAL - LIGHT THEME) ===============
+.depositForm {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 500px;
+  padding: $spacing-8;
+  background: $bg-primary;
+  backdrop-filter: blur(20px);
+  border: 1.5px solid $primary-200;
+  border-radius: $radius-2xl;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(99, 102, 241, 0.05) inset;
+  animation: modalFadeIn 0.3s $ease-out-expo;
+  z-index: 1000;
+}
+
+.formTitle {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  font-size: $text-2xl;
+  font-weight: $font-bold;
+  color: $color-text;
+  margin: 0 0 $spacing-2 0;
+
+  svg {
+    color: $primary-600;
+  }
+}
+
+.formSubtitle {
+  font-size: $text-sm;
+  color: $color-text-secondary;
+  margin: 0 0 $spacing-6 0;
+}
+
+.inputWrapper {
+  position: relative;
+  margin-bottom: $spacing-6;
+}
+
+.input {
+  width: 100%;
+  padding: $spacing-4 $spacing-24 $spacing-4 $spacing-4;
+  background: $bg-secondary;
+  border: 2px solid $color-border;
+  border-radius: $radius-lg;
+  color: $color-text;
+  font-size: $text-2xl;
+  font-weight: $font-semibold;
+  font-family: $font-mono;
+  transition: all $transition-base;
+
+  &:focus {
+    outline: none;
+    border-color: $primary-500;
+    background: $bg-primary;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  }
+
+  &::placeholder {
+    color: $color-text-muted;
+  }
+}
+
+.inputSuffix {
+  position: absolute;
+  right: $spacing-4;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: $text-lg;
+  font-weight: $font-bold;
+  color: $primary-600;
+  pointer-events: none;
+}
+
+.formActions {
+  display: flex;
+  gap: $spacing-4;
+
+  @media (max-width: $breakpoint-sm) {
+    flex-direction: column;
+  }
+}
+
+// =============== MODAL BACKDROP ===============
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+// =============== ANIMATIONS ===============
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

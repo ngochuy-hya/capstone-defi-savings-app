@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "updatedAt": "2026-01-30",
+  "plans": [
+    {
+      "key": "7-day-express",
+      "match": { "name": "7-Day Express", "durationDays": 7 },
+      "display": {
+        "title": "7-Day Express",
+        "description": "Gửi ngắn hạn, linh hoạt, phù hợp thử nghiệm/nhập môn.",
+        "highlights": ["Nhanh đáo hạn", "APR ổn định", "Phù hợp vốn nhỏ"],
+        "recommended": false,
+        "accent": "cyan",
+        "image": { "src": "/plan-images/7-day-express.svg", "alt": "7-Day Express plan art" }
+      }
+    },
+    {
+      "key": "30-day-standard",
+      "match": { "name": "30-Day Standard", "durationDays": 30 },
+      "display": {
+        "title": "30-Day Standard",
+        "description": "Cân bằng giữa lợi nhuận và thanh khoản, lựa chọn phổ biến.",
+        "highlights": ["Cân bằng rủi ro", "Kỳ hạn vừa", "Dễ tối ưu vốn"],
+        "recommended": true,
+        "accent": "violet",
+        "image": { "src": "/plan-images/30-day-standard.svg", "alt": "30-Day Standard plan art" }
+      }
+    },
+    {
+      "key": "90-day-growth",
+      "match": { "name": "90-Day Growth", "durationDays": 90 },
+      "display": {
+        "title": "90-Day Growth",
+        "description": "Tối ưu lợi nhuận theo chu kỳ quý, phù hợp vốn trung hạn.",
+        "highlights": ["APR cao hơn", "Phù hợp kế hoạch quý", "Tích luỹ đều"],
+        "recommended": false,
+        "accent": "emerald",
+        "image": { "src": "/plan-images/90-day-growth.svg", "alt": "90-Day Growth plan art" }
+      }
+    },
+    {
+      "key": "180-day-premium",
+      "match": { "name": "180-Day Premium", "durationDays": 180 },
+      "display": {
+        "title": "180-Day Premium",
+        "description": "Kỳ hạn dài hơn để tối đa hoá lợi nhuận dự kiến.",
+        "highlights": ["APR cao", "Kế hoạch dài hạn", "Phù hợp holder"],
+        "recommended": false,
+        "accent": "amber",
+        "image": { "src": "/plan-images/180-day-premium.svg", "alt": "180-Day Premium plan art" }
+      }
+    }
+  ]
+}

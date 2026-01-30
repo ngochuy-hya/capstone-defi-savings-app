@@ -1,0 +1,115 @@
+/* ============================================
+   THEME CSS VARIABLES
+   Purple Gradient Dark Mode Theme
+   ============================================ */
+
+:root {
+  /* Light Theme Colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-tertiary: #adb5bd;
+  
+  --border-color: #dee2e6;
+  --border-light: #f1f3f5;
+  
+  /* Accent Colors - Purple Theme */
+  --accent-primary: #7c3aed;
+  --accent-secondary: #a78bfa;
+  --accent-tertiary: #c4b5fd;
+  
+  --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%);
+  
+  /* Status Colors */
+  --success-color: #10b981;
+  --success-bg: #d1fae5;
+  --warning-color: #f59e0b;
+  --warning-bg: #fef3c7;
+  --error-color: #ef4444;
+  --error-bg: #fee2e2;
+  --info-color: #3b82f6;
+  --info-bg: #dbeafe;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-blur: blur(10px);
+
+  /* App surfaces */
+  --page-gradient: linear-gradient(to bottom, #fafafa 0%, #f4f4f5 100%);
+  --accent-soft: rgba(124, 58, 237, 0.08);
+  --accent-soft-border: rgba(124, 58, 237, 0.18);
+}
+
+[data-theme="dark"] {
+  /* Dark Theme Colors */
+  --bg-primary: #0f0f1e;
+  --bg-secondary: #1a1a2e;
+  --bg-tertiary: #25253a;
+  
+  --text-primary: #e9ecef;
+  --text-secondary: #adb5bd;
+  --text-tertiary: #868e96;
+  
+  --border-color: #3a3a4d;
+  --border-light: #2d2d3f;
+  
+  /* Accent Colors - Brighter for dark mode */
+  --accent-primary: #a78bfa;
+  --accent-secondary: #c4b5fd;
+  --accent-tertiary: #ddd6fe;
+  
+  --accent-gradient: linear-gradient(135deg, #7c3aed 0%, #c026d3 50%, #db2777 100%);
+  --accent-gradient-hover: linear-gradient(135deg, #6d28d9 0%, #a21caf 50%, #be185d 100%);
+  
+  /* Status Colors - Adjusted for dark theme */
+  --success-color: #34d399;
+  --success-bg: rgba(16, 185, 129, 0.1);
+  --warning-color: #fbbf24;
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --error-color: #f87171;
+  --error-bg: rgba(239, 68, 68, 0.1);
+  --info-color: #60a5fa;
+  --info-bg: rgba(59, 130, 246, 0.1);
+  
+  /* Shadows - Lighter for dark theme */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
+  
+  /* Glassmorphism - Dark */
+  --glass-bg: rgba(26, 26, 46, 0.7);
+  --glass-border: rgba(167, 139, 250, 0.2);
+  --glass-blur: blur(10px);
+
+  /* App surfaces */
+  --page-gradient: linear-gradient(to bottom, #0b0b16 0%, #0f0f1e 40%, #1a1a2e 100%);
+  --accent-soft: rgba(167, 139, 250, 0.14);
+  --accent-soft-border: rgba(167, 139, 250, 0.22);
+}
+
+/* Smooth theme transition */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Disable transition for theme toggle to prevent flash */
+.no-transition {
+  transition: none !important;
+}
+
+/* Native UI color hint */
+[data-theme="dark"] {
+  color-scheme: dark;
+}

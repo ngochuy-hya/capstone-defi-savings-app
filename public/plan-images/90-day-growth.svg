@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="90-Day Growth">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.22"/>
+      <stop offset="50%" stop-color="#06b6d4" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#22c55e" stop-opacity="0.22"/>
+    </linearGradient>
+    <linearGradient id="stroke" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" rx="32" fill="url(#bg)"/>
+  <rect x="28" y="28" width="1144" height="574" rx="28" fill="rgba(0,0,0,0.10)" stroke="url(#stroke)" stroke-width="2"/>
+  <rect x="740" y="130" width="360" height="360" rx="40" fill="rgba(52,211,153,0.10)"/>
+  <text x="72" y="150" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="52" font-weight="800" fill="rgba(255,255,255,0.92)">90-Day Growth</text>
+  <text x="72" y="205" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="26" font-weight="600" fill="rgba(255,255,255,0.75)">Quarterly focus " Higher APR " Mid-term strategy</text>
+  <text x="72" y="340" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="22" font-weight="600" fill="rgba(255,255,255,0.78)">Highlights</text>
+  <text x="72" y="382" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="20" fill="rgba(255,255,255,0.70)">" Stronger APR</text>
+  <text x="72" y="416" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="20" fill="rgba(255,255,255,0.70)">" Great for quarterly plans</text>
+  <text x="72" y="450" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="20" fill="rgba(255,255,255,0.70)">" Steady accumulation</text>
+</svg>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="7-Day Express">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.22"/>
+      <stop offset="50%" stop-color="#7c3aed" stop-opacity="0.16"/>
+      <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0.22"/>
+    </linearGradient>
+    <linearGradient id="stroke" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" rx="32" fill="url(#bg)"/>
+  <rect x="28" y="28" width="1144" height="574" rx="28" fill="rgba(0,0,0,0.10)" stroke="url(#stroke)" stroke-width="2"/>
+  <circle cx="1010" cy="145" r="120" fill="rgba(34,211,238,0.10)"/>
+  <circle cx="180" cy="500" r="160" fill="rgba(167,139,250,0.10)"/>
+  <text x="72" y="150" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="52" font-weight="800" fill="rgba(255,255,255,0.92)">7-Day Express</text>
+  <text x="72" y="205" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="26" font-weight="600" fill="rgba(255,255,255,0.75)">Fast maturity " Flexible " Beginner friendly</text>
+  <text x="72" y="340" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="22" font-weight="600" fill="rgba(255,255,255,0.78)">Highlights</text>
+  <text x="72" y="382" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="20" fill="rgba(255,255,255,0.70)">" Quick 7-day cycle</text>
+  <text x="72" y="416" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="20" fill="rgba(255,255,255,0.70)">" Stable APR</text>
+  <text x="72" y="450" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI" font-size="20" fill="rgba(255,255,255,0.70)">" Great for small capital</text>
+</svg>
