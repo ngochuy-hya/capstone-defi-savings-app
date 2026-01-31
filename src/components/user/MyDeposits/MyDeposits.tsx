@@ -6,19 +6,104 @@ import { formatUSDC, formatDate, getDaysRemaining, isMatured } from '../../../ut
 import { calculateMaturityAmount } from '../../../utils/calculator';
 import { Button } from '../../common/Button/Button';
 import { DepositStatus } from '../../../utils/constants';
-import { TrendingUp, Clock, CheckCircle, DollarSign, AlertCircle, RotateCcw } from 'lucide-react';
+import { useWallet } from '../../../context/WalletContext';
+import { TrendingUp, Clock, CheckCircle, DollarSign, AlertCircle, RotateCcw, RefreshCw, History } from 'lucide-react';
 import styles from './MyDeposits.module.scss';
 
+const CLOSED_DEPOSITS_KEY = (addr: string) => `closed_deposits_${addr?.toLowerCase() ?? ''}`;
+const MAX_CLOSED_IDS = 50;
+
+function getClosedDepositIds(address: string | undefined): number[] {
+  if (!address) return [];
+  try {
+    const raw = localStorage.getItem(CLOSED_DEPOSITS_KEY(address));
+    if (!raw) return [];
+    const arr = JSON.parse(raw) as number[];
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+}
+
+function addClosedDepositId(address: string | undefined, depositId: number): void {
+  if (!address) return;
+  const key = CLOSED_DEPOSITS_KEY(address);
+  const current = getClosedDepositIds(address);
+  const next = [depositId, ...current.filter(id => id !== depositId)].slice(0, MAX_CLOSED_IDS);
+  try {
+    localStorage.setItem(key, JSON.stringify(next));
+  } catch {
+    // ignore
+  }
+}
+
 export const MyDeposits: React.FC = () => {
-  const { fetchUserDeposits, withdrawAtMaturity, earlyWithdraw, renewDeposit, loading } = useDeposit();
+  const { fetchUserDeposits, fetchDepositDetailsByIds, withdrawAtMaturity, earlyWithdraw, renewDeposit, loading } = useDeposit();
   const { getPlan } = usePlans();
+  const { address, isConnected } = useWallet();
   const [deposits, setDeposits] = useState<Deposit[]>([]);
+  const [closedDeposits, setClosedDeposits] = useState<Deposit[]>([]);
   const [plans, setPlans] = useState<Map<string, Plan>>(new Map());
   const [loadingDeposits, setLoadingDeposits] = useState(true);
 
+  const nowSec = () => BigInt(Math.floor(Date.now() / 1000));
+
+  const clamp = (n: bigint, min: bigint, max: bigint) => (n < min ? min : n > max ? max : n);
+
+  const formatRemaining = (maturityTime: bigint) => {
+    const now = nowSec();
+    if (now >= maturityTime) return 'Matured';
+    const diff = maturityTime - now;
+    const days = diff / 86400n;
+    const hours = (diff % 86400n) / 3600n;
+    const mins = (diff % 3600n) / 60n;
+    if (days > 0n) return `${days.toString()}d ${hours.toString()}h left`;
+    if (hours > 0n) return `${hours.toString()}h ${mins.toString()}m left`;
+    return `${mins.toString()}m left`;
+  };
+
+  const progressPercent = (start: bigint, maturity: bigint) => {
+    if (maturity <= start) return 0;
+    const dur = maturity - start;
+    const elapsed = clamp(nowSec() - start, 0n, dur);
+    return Number((elapsed * 100n) / dur);
+  };
+
+  // Refetch when wallet connects or address changes (fix: reload page showed no deposits until refetch)
   useEffect(() => {
-    loadDeposits();
-  }, []);
+    if (address && isConnected) {
+      loadDeposits();
+    } else {
+      setDeposits([]);
+      setClosedDeposits([]);
+      setPlans(new Map());
+      setLoadingDeposits(false);
+    }
+  }, [address, isConnected]);
+
+  const loadClosedDeposits = async () => {
+    if (!address) return;
+    const ids = getClosedDepositIds(address);
+    if (ids.length === 0) {
+      setClosedDeposits([]);
+      return;
+    }
+    const closed = await fetchDepositDetailsByIds(ids.map(BigInt));
+    setClosedDeposits(closed);
+    // Merge plan cache for closed deposits
+    const closedPlanMap = new Map<string, Plan>();
+    for (const d of closed) {
+      const plan = await getPlan(Number(d.planId));
+      if (plan) closedPlanMap.set(d.planId.toString(), plan);
+    }
+    if (closedPlanMap.size > 0) {
+      setPlans(prev => {
+        const next = new Map(prev);
+        closedPlanMap.forEach((v, k) => next.set(k, v));
+        return next;
+      });
+    }
+  };
 
   const loadDeposits = async () => {
     setLoadingDeposits(true);
@@ -34,12 +119,14 @@ export const MyDeposits: React.FC = () => {
       }
     }
     setPlans(planMap);
+    await loadClosedDeposits();
     setLoadingDeposits(false);
   };
 
   const handleWithdraw = async (depositId: bigint) => {
     const success = await withdrawAtMaturity(Number(depositId));
     if (success) {
+      addClosedDepositId(address ?? undefined, Number(depositId));
       alert('Withdrawn successfully!');
       loadDeposits();
     }
@@ -50,16 +137,17 @@ export const MyDeposits: React.FC = () => {
 
     const success = await earlyWithdraw(Number(depositId));
     if (success) {
+      addClosedDepositId(address ?? undefined, Number(depositId));
       alert('Early withdraw successful!');
       loadDeposits();
     }
   };
 
   const handleRenew = async (depositId: bigint) => {
-    // renewDeposit(tokenId, useCurrentRate, newPlanId)
-    // newPlanId = 0 means use the same plan
-    const success = await renewDeposit(Number(depositId), true, 0);
+    // autoRenew(tokenId) — locks APR, compounds interest, within 2 days after maturity
+    const success = await renewDeposit(Number(depositId));
     if (success) {
+      addClosedDepositId(address ?? undefined, Number(depositId));
       alert('Deposit renewed successfully!');
       loadDeposits();
     }
@@ -93,9 +181,9 @@ export const MyDeposits: React.FC = () => {
     renewed: deposits.filter(d => d.status === DepositStatus.Renewed),
   };
 
-  const hasAnyDeposits = deposits.length > 0;
+  const hasAnyDeposits = deposits.length > 0 || closedDeposits.length > 0;
 
-  if (!hasAnyDeposits) {
+  if (!hasAnyDeposits && !loadingDeposits) {
     return (
       <div className={styles.container}>
         <div className={styles.header}>
@@ -111,8 +199,17 @@ export const MyDeposits: React.FC = () => {
           <div className={styles.emptyIcon}>
             <DollarSign size={64} />
           </div>
-          <h2>No Deposits Yet</h2>
-          <p>Start saving by choosing a plan and making your first deposit!</p>
+          {!isConnected ? (
+            <>
+              <h2>Connect your wallet</h2>
+              <p>Connect your wallet to see your deposits.</p>
+            </>
+          ) : (
+            <>
+              <h2>No Deposits Yet</h2>
+              <p>Start saving by choosing a plan and making your first deposit!</p>
+            </>
+          )}
         </div>
       </div>
     );
@@ -121,11 +218,22 @@ export const MyDeposits: React.FC = () => {
   const renderDepositCard = (deposit: Deposit, status: string) => {
     const plan = plans.get(deposit.planId.toString());
     const daysLeft = getDaysRemaining(deposit.maturityTime);
+    const remainingLabel = formatRemaining(deposit.maturityTime);
+    const progress = progressPercent(deposit.startTime, deposit.maturityTime);
     const maturityAmount = calculateMaturityAmount(
       deposit.principal,
       deposit.lockedAprBps,
       plan?.durationDays || 0
     );
+    const totalInterestAtMaturity = maturityAmount > deposit.principal ? maturityAmount - deposit.principal : 0n;
+    const durationSeconds = deposit.maturityTime > deposit.startTime ? deposit.maturityTime - deposit.startTime : 0n;
+    const elapsedSeconds = durationSeconds === 0n ? 0n : clamp(nowSec() - deposit.startTime, 0n, durationSeconds);
+    const accruedInterestEst =
+      durationSeconds === 0n ? 0n : (totalInterestAtMaturity * elapsedSeconds) / durationSeconds;
+
+    const penaltyBps = BigInt(plan?.earlyWithdrawPenaltyBps ?? 0);
+    const penaltyAmount = (deposit.principal * penaltyBps) / 10000n;
+    const earlyPayout = deposit.principal > penaltyAmount ? deposit.principal - penaltyAmount : 0n;
 
     return (
       <div key={deposit.tokenId.toString()} className={`${styles.card} ${styles[status]}`}>
@@ -142,8 +250,59 @@ export const MyDeposits: React.FC = () => {
               {status === 'renewed' && 'Renewed'}
             </span>
             <span className={styles.depositId}>NFT #{deposit.tokenId.toString()}</span>
+            {deposit.isAutoRenewEnabled && (
+              <span className={`${styles.chip} ${styles.chipAutoRenew}`}>Auto-renew</span>
+            )}
           </div>
           {status === 'active' && <span className={styles.daysLeft}>{daysLeft} days left</span>}
+        </div>
+
+        <div className={styles.heroRow}>
+          <div className={styles.planInfo}>
+            {plan?.metadata?.display.image?.src && (
+              <div className={styles.planImageWrap}>
+                <img
+                  className={styles.planImage}
+                  src={plan.metadata.display.image.src}
+                  alt={plan.metadata.display.image.alt ?? `${plan.name} plan image`}
+                  loading="lazy"
+                />
+              </div>
+            )}
+            <div className={styles.planText}>
+              <div className={styles.planTitle}>
+                {plan?.metadata?.display.title ?? plan?.name ?? `Plan #${deposit.planId.toString()}`}
+              </div>
+              <div className={styles.planSubtitle}>
+                {plan?.durationDays ? `${plan.durationDays} days term` : 'Term deposit'}
+              </div>
+              {plan?.metadata?.display.description && (
+                <div className={styles.planDescription}>{plan.metadata.display.description}</div>
+              )}
+              {plan?.metadata?.display.highlights?.length ? (
+                <div className={styles.planHighlights}>
+                  {plan.metadata.display.highlights.slice(0, 3).map((h) => (
+                    <span key={h} className={styles.chip}>
+                      {h}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <div className={styles.progressWrap}>
+            <div
+              className={styles.progressRing}
+              style={{ ['--p' as unknown as keyof React.CSSProperties]: progress } as React.CSSProperties}
+              aria-label={`Progress ${progress}%`}
+            >
+              <div className={styles.progressInner}>
+                <div className={styles.progressValue}>{progress}%</div>
+                <div className={styles.progressLabel}>{remainingLabel}</div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className={styles.mainAmount}>
@@ -175,11 +334,15 @@ export const MyDeposits: React.FC = () => {
           <div className={styles.resultItem}>
             <span className={styles.resultLabel}>
               <TrendingUp size={16} />
-              Interest Earned
+              Interest (est.)
             </span>
             <span className={styles.resultValue}>
-              +{formatUSDC(maturityAmount - deposit.principal)} USDC
+              +{formatUSDC(accruedInterestEst)} USDC
             </span>
+          </div>
+          <div className={styles.resultItem}>
+            <span className={styles.resultLabel}>Projected at Maturity</span>
+            <span className={styles.resultValue}>+{formatUSDC(totalInterestAtMaturity)} USDC</span>
           </div>
           <div className={styles.divider}></div>
           <div className={styles.resultItem}>
@@ -187,6 +350,23 @@ export const MyDeposits: React.FC = () => {
             <span className={styles.totalValue}>{formatUSDC(maturityAmount)} USDC</span>
           </div>
         </div>
+
+        {status === 'active' && penaltyBps > 0n && (
+          <div className={styles.penaltyBox}>
+            <div className={styles.penaltyRow}>
+              <span className={styles.resultLabel}>Early withdraw penalty</span>
+              <span className={styles.detailValue}>{Number(penaltyBps) / 100}%</span>
+            </div>
+            <div className={styles.penaltyRow}>
+              <span className={styles.resultLabel}>Penalty amount (est.)</span>
+              <span className={styles.resultValue}>-{formatUSDC(penaltyAmount)} USDC</span>
+            </div>
+            <div className={styles.penaltyRow}>
+              <span className={styles.resultLabel}>You receive (est.)</span>
+              <span className={styles.totalValue}>{formatUSDC(earlyPayout)} USDC</span>
+            </div>
+          </div>
+        )}
 
         {(status === 'active' || status === 'matured') && (
           <div className={styles.actions}>
@@ -224,6 +404,64 @@ export const MyDeposits: React.FC = () => {
     );
   };
 
+  const closedStatusLabel = (status: number) => {
+    if (status === DepositStatus.EarlyWithdrawn) return 'Đã rút sớm';
+    if (status === DepositStatus.Withdrawn) return 'Đã đáo hạn';
+    if (status === DepositStatus.Renewed) return 'Đã gia hạn';
+    return 'Đã đóng';
+  };
+
+  const renderClosedCard = (deposit: Deposit) => {
+    const plan = plans.get(deposit.planId.toString());
+    const label = closedStatusLabel(deposit.status);
+    return (
+      <div key={deposit.tokenId.toString()} className={`${styles.card} ${styles.cardClosed}`}>
+        <div className={styles.cardTop}>
+          <div className={styles.badgeContainer}>
+            <span className={`${styles.badge} ${styles.badgeClosed}`}>
+              <History size={14} />
+              {label}
+            </span>
+            <span className={styles.depositId}>NFT #{deposit.tokenId.toString()}</span>
+          </div>
+        </div>
+        <div className={styles.heroRow}>
+          <div className={styles.planInfo}>
+            {plan?.metadata?.display.image?.src && (
+              <div className={styles.planImageWrap}>
+                <img
+                  className={styles.planImage}
+                  src={plan.metadata.display.image.src}
+                  alt={plan.metadata.display.image.alt ?? `${plan?.name} plan image`}
+                  loading="lazy"
+                />
+              </div>
+            )}
+            <div className={styles.planText}>
+              <div className={styles.planTitle}>
+                {plan?.metadata?.display.title ?? plan?.name ?? `Plan #${deposit.planId.toString()}`}
+              </div>
+              <div className={styles.planSubtitle}>
+                {plan?.durationDays ? `${plan.durationDays} days term` : 'Term deposit'}
+              </div>
+            </div>
+          </div>
+          <div className={styles.principalAmount}>{formatUSDC(deposit.principal)} USDC</div>
+        </div>
+        <div className={styles.detailGrid}>
+          <div className={styles.detailRow}>
+            <span className={styles.detailLabel}>Bắt đầu</span>
+            <span className={styles.detailValue}>{formatDate(deposit.startTime)}</span>
+          </div>
+          <div className={styles.detailRow}>
+            <span className={styles.detailLabel}>Đáo hạn</span>
+            <span className={styles.detailValue}>{formatDate(deposit.maturityTime)}</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -234,6 +472,17 @@ export const MyDeposits: React.FC = () => {
           </h1>
           <p className={styles.subtitle}>Track and manage all your savings deposits</p>
         </div>
+        {isConnected && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => loadDeposits()}
+            disabled={loadingDeposits}
+            icon={<RefreshCw size={16} />}
+          >
+            {loadingDeposits ? 'Loading...' : 'Làm mới'}
+          </Button>
+        )}
       </div>
 
       {groupedDeposits.active.length > 0 && (
@@ -280,6 +529,21 @@ export const MyDeposits: React.FC = () => {
           </h2>
           <div className={styles.grid}>
             {groupedDeposits.withdrawn.map(deposit => renderDepositCard(deposit, 'withdrawn'))}
+          </div>
+        </section>
+      )}
+
+      {closedDeposits.length > 0 && (
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitleClosed}>
+            <History size={24} />
+            Đã đóng (Lịch sử)
+          </h2>
+          <p className={styles.sectionDescClosed}>
+            Các deposit đã rút sớm, rút đúng hạn hoặc gia hạn — chỉ để xem lại, không thể thao tác.
+          </p>
+          <div className={styles.grid}>
+            {closedDeposits.map(deposit => renderClosedCard(deposit))}
           </div>
         </section>
       )}

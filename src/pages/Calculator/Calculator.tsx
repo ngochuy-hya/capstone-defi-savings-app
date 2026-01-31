@@ -313,7 +313,7 @@ export const Calculator: React.FC = () => {
         <div className={styles.infoCard}>
           <h3>Auto Renewal</h3>
           <ul>
-            <li>Deposits auto-renew after 3-day grace period</li>
+            <li>Deposits auto-renew within 2-day grace period after maturity</li>
             <li>Principal + interest becomes new deposit base</li>
             <li>Same tenor and APR from original deposit</li>
             <li>Compound your earnings automatically</li>

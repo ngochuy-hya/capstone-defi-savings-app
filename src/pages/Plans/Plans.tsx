@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, Clock, Percent, DollarSign, CheckCircle2, ArrowRight } from 'lucide-react';
+import { TrendingUp, Clock, Percent, DollarSign, CheckCircle2, ArrowRight, Pause } from 'lucide-react';
 import { usePlans } from '../../hooks/usePlans';
 import { useDeposit } from '../../hooks/useDeposit';
 import { useWallet } from '../../context/WalletContext';
+import { parseUSDC } from '../../utils/formatters';
 import { Button } from '../../components/common/Button/Button';
 import { formatUSDC } from '../../utils/formatters';
 import type { Plan } from '../../types';
@@ -10,18 +11,33 @@ import styles from './Plans.module.scss';
 
 export const Plans: React.FC = () => {
   const { plans, loading: plansLoading, fetchPlans } = usePlans();
-  const { openDeposit, loading: depositLoading } = useDeposit();
+  const { openDeposit, loading: depositLoading, error: depositError, clearError } = useDeposit();
   const { isConnected } = useWallet();
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [amount, setAmount] = useState('');
 
   useEffect(() => {
-    // Fetch plans even if wallet is not connected
     fetchPlans();
   }, [fetchPlans]);
 
+  // Clear deposit error when user changes amount or plan so they see fresh validation
+  useEffect(() => {
+    if (selectedPlan || amount) clearError();
+  }, [selectedPlan, amount, clearError]);
+
   const handleDeposit = async () => {
     if (!selectedPlan || !amount) return;
+    const amountNum = Number(amount);
+    if (isNaN(amountNum) || amountNum <= 0) return;
+    const amountWei = parseUSDC(amount);
+    if (amountWei < selectedPlan.minDeposit) {
+      alert(`Số tiền tối thiểu là ${formatUSDC(selectedPlan.minDeposit)} USDC.`);
+      return;
+    }
+    if (selectedPlan.maxDeposit !== 0n && amountWei > selectedPlan.maxDeposit) {
+      alert(`Số tiền vượt quá giới hạn plan. Tối đa ${formatUSDC(selectedPlan.maxDeposit)} USDC.`);
+      return;
+    }
     const success = await openDeposit(Number(selectedPlan.planId), amount);
     if (success) {
       setAmount('');
@@ -70,11 +86,18 @@ export const Plans: React.FC = () => {
             {plans.map((plan, index) => (
               <div
                 key={Number(plan.planId)}
-                className={`${styles.card} ${selectedPlan?.planId === plan.planId ? styles.selected : ''}`}
+                className={`${styles.card} ${selectedPlan?.planId === plan.planId ? styles.selected : ''} ${!plan.enabled ? styles.cardPaused : ''}`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                {/* Popular Badge */}
-                {plan.durationDays === 90 && (
+                {/* Paused / Tạm dừng Badge */}
+                {!plan.enabled && (
+                  <div className={styles.badgePaused}>
+                    <Pause size={14} />
+                    <span>Tạm dừng</span>
+                  </div>
+                )}
+                {/* Popular Badge (only when active) */}
+                {plan.enabled && plan.durationDays === 90 && (
                   <div className={styles.badge}>
                     <CheckCircle2 size={14} />
                     <span>Popular</span>
@@ -91,6 +114,18 @@ export const Plans: React.FC = () => {
                     <p className={styles.cardSubtitle}>{plan.durationDays} Days Term</p>
                   </div>
                 </div>
+
+                {/* Offchain Image (optional) */}
+                {plan.metadata?.display.image?.src && (
+                  <div className={styles.planImageWrap}>
+                    <img
+                      className={styles.planImage}
+                      src={plan.metadata.display.image.src}
+                      alt={plan.metadata.display.image.alt ?? `${plan.name} plan image`}
+                      loading="lazy"
+                    />
+                  </div>
+                )}
 
                 {/* APR Display */}
                 <div className={styles.apr}>
@@ -157,11 +192,12 @@ export const Plans: React.FC = () => {
                 <Button
                   fullWidth
                   variant={selectedPlan?.planId === plan.planId ? 'primary' : 'outline'}
-                  onClick={() => setSelectedPlan(plan)}
-                  icon={selectedPlan?.planId === plan.planId ? <CheckCircle2 size={18} /> : <ArrowRight size={18} />}
+                  onClick={() => plan.enabled && setSelectedPlan(plan)}
+                  disabled={!plan.enabled}
+                  icon={!plan.enabled ? <Pause size={18} /> : selectedPlan?.planId === plan.planId ? <CheckCircle2 size={18} /> : <ArrowRight size={18} />}
                   iconPosition="right"
                 >
-                  {selectedPlan?.planId === plan.planId ? 'Selected' : 'Select Plan'}
+                  {!plan.enabled ? 'Tạm dừng' : selectedPlan?.planId === plan.planId ? 'Selected' : 'Select Plan'}
                 </Button>
               </div>
             ))}
@@ -196,10 +232,15 @@ export const Plans: React.FC = () => {
                   className={styles.input}
                   min={formatUSDC(selectedPlan.minDeposit)}
                   max={selectedPlan.maxDeposit !== 0n ? formatUSDC(selectedPlan.maxDeposit) : undefined}
+                  step="0.01"
                 />
                 <span className={styles.inputSuffix}>USDC</span>
               </div>
-
+              {depositError && (
+                <p className={styles.formError} role="alert">
+                  {depositError}
+                </p>
+              )}
               <div className={styles.formActions}>
                 <Button
                   variant="ghost"

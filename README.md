@@ -1,62 +1,32 @@
 # 🏦 SaveVault - DeFi Savings Protocol Frontend
 
-> Modern React frontend for the DeFi Savings Protocol  
-> Built with React 19, TypeScript, ethers.js v6, and Vite
+> **Capstone Project - Blockchain Development Internship**  
+> **Author:** Nguyễn Ngọc Huy - AppsCyclone  
+> **Timeline:** January 2026
+
+Giao diện React cho **DeFi Savings Protocol**: kết nối ví, xem plan, mở deposit (NFT), theo dõi sổ tiết kiệm, rút đúng hạn / rút sớm / gia hạn. Admin: quản lý plan, fund/rút Interest Vault, pause/unpause.
+
+**Smart contracts:** [capstone-defi-savings-protocol](../capstone-defi-savings-protocol/) (Hardhat, Solidity).
 
 ---
 
-## 🚀 Quick Start
+## 📋 Overview
 
-### Prerequisites
-- Node.js 16+ and npm/yarn
-- MetaMask or compatible Web3 wallet
-- Sepolia testnet ETH (for gas)
+**SaveVault Frontend** kết nối với protocol trên Sepolia:
 
-### Installation
+- 💳 **Connect Wallet** — MetaMask, network Sepolia
+- 📋 **Plans** — Xem plan (APR, kỳ hạn, min/max), plan tắt hiển thị mờ
+- 💰 **Deposit** — Chọn plan, nhập số tiền, approve USDC → mở deposit, nhận NFT
+- 📊 **My Deposits** — Active / Matured / Đã đóng (lịch sử rút sớm, đáo hạn, gia hạn)
+- 💸 **Withdraw** — Rút đúng hạn (gốc + lãi) hoặc rút sớm (gốc − phạt)
+- ♻️ **Renew** — Gia hạn trong 2 ngày sau đáo hạn (APR locked)
+- 🧮 **Calculator** — Ước tính lãi theo plan
+- 👑 **Admin** — Tạo/sửa/bật tắt plan, Fund / Rút Interest Vault, Pause / Unpause contract
 
-```bash
-# Install dependencies
-npm install
-# or
-yarn install
+### Tech Stack
 
-# Copy environment variables
-cp .env.example .env
-
-# Start development server
-npm run dev
-# or
-yarn dev
-```
-
-Visit `http://localhost:5173`
-
----
-
-## 📋 Features
-
-### User Features
-- ✅ **Connect Wallet** - MetaMask integration
-- ✅ **Browse Plans** - View all available saving plans
-- ✅ **Open Deposits** - Create new savings with chosen plan
-- ✅ **View Deposits** - Track all your active deposits
-- ✅ **Withdraw** - At maturity or early (with penalty)
-- ✅ **Renew Deposits** - Rollover to new term
-- ✅ **Interest Calculator** - Estimate earnings
-
-### Admin Features
-- ✅ **Create Plans** - Add new saving plans
-- ✅ **Update Plans** - Modify existing plans
-- ✅ **Toggle Plans** - Enable/disable plans
-- ✅ **Vault Management** - Monitor protocol health
-- ✅ **Emergency Pause** - Contract safety controls
-
----
-
-## 🏗️ Tech Stack
-
-- **Framework:** React 19 with TypeScript
-- **Build Tool:** Vite 7
+- **Framework:** React 19 + TypeScript
+- **Build:** Vite 7
 - **Blockchain:** ethers.js v6
 - **Styling:** SCSS Modules
 - **Icons:** Lucide React
@@ -64,35 +34,68 @@ Visit `http://localhost:5173`
 
 ---
 
-## 📦 Deployed Contracts
+## 🚀 Quick Start
 
-### Sepolia Testnet
+### Prerequisites
 
-```typescript
-MockUSDC:      0xC62464eaD63c27aE68B296522837e923f856fe05
-VaultManager:  0x870d756E4Ec6745C24CE3DAD776cC53ddB51ae62
-SavingsBank:   0xB95742736EDeE68c9cb3F9a44D3F04D96F40d7d4
+- Node.js 16+
+- npm hoặc yarn
+- MetaMask (hoặc ví tương thích)
+- Sepolia testnet ETH (gas) + test USDC
+
+### Install & Run
+
+```bash
+cd capstone-defi-savings-app
+npm install
+cp .env.example .env
+# Sửa .env nếu dùng contract khác (mặc định Sepolia)
+npm run dev
 ```
 
-Network: Sepolia (Chain ID: 11155111)  
-Explorer: https://sepolia.etherscan.io/
+Mở `http://localhost:5173`
 
 ---
 
-## 🎨 Design System
+## 📦 Deployed Contracts (Sepolia)
 
-### Color Palette (Light Theme)
-- **Primary:** Indigo (#6366f1) - Professional banking feel
-- **Secondary:** Emerald (#10b981) - Growth & success
-- **Accent:** Violet (#a855f7) - Premium touch
-- **Background:** White to light gray gradient
+Cấu hình mặc định trong `.env.example`:
 
-### Key Design Principles
-- ✨ Clean, modern, professional appearance
-- 📱 Fully responsive (mobile-first)
-- ♿ Accessible (WCAG 2.1 AA)
-- 🎯 User-friendly interactions
-- ⚡ Smooth animations and transitions
+| Contract     | Address (Sepolia) |
+|-------------|-------------------|
+| MockUSDC    | `0xF38A9Ed7840aB6eef41DF9d88b19fFf7443AA656` |
+| SavingsBank | `0x3B6e54bb5B36a89838435EC504cE78B3B7Fd29DC` |
+| TokenVault  | `0x3F371D9b7AF25DF7fcE3DEE044a11825ACDeFD64` |
+| InterestVault | `0x5a17868C3d6E1d3f19Ea56c483eA10aE5050051F` |
+| DepositNFT  | `0x5f7Ac1Dc1180D652aa06B3eA7017B9E76bc46765` |
+
+- **Chain ID:** 11155111 (Sepolia)  
+- **Explorer:** https://sepolia.etherscan.io
+
+---
+
+## 🌐 Environment Variables
+
+Xem `.env.example`. Các biến dùng trong build (prefix `VITE_`):
+
+```env
+# Contract Addresses (Sepolia)
+VITE_MOCK_USDC_ADDRESS=0x...
+VITE_SAVINGS_BANK_ADDRESS=0x...
+VITE_TOKEN_VAULT_ADDRESS=0x...
+VITE_INTEREST_VAULT_ADDRESS=0x...
+VITE_DEPOSIT_NFT_ADDRESS=0x...
+
+# Network
+VITE_CHAIN_ID=11155111
+VITE_CHAIN_NAME=Sepolia
+VITE_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
+VITE_BLOCK_EXPLORER=https://sepolia.etherscan.io
+
+# App (optional)
+VITE_APP_NAME=SaveVault
+VITE_APP_DESCRIPTION=Smart Savings Protocol on Ethereum
+```
 
 ---
 
@@ -101,220 +104,79 @@ Explorer: https://sepolia.etherscan.io/
 ```
 src/
 ├── components/
-│   ├── common/          # Reusable UI components
-│   ├── user/            # User-specific features
-│   └── wallet/          # Wallet connection
+│   ├── common/          # Button, Header, Footer, ThemeToggle, UserInfoWidget
+│   ├── user/            # PlanList, MyDeposits
+│   └── wallet/          # ConnectWallet, WalletInfo
 ├── context/
-│   ├── WalletContext.tsx    # Wallet state management
-│   └── ContractContext.tsx  # Contract instances
+│   ├── WalletContext.tsx    # Wallet + admin check
+│   ├── ContractContext.tsx  # Contract instances
+│   └── ThemeContext.tsx     # Light/Dark
 ├── hooks/
-│   ├── usePlans.ts          # Fetch and manage plans
-│   ├── useDeposit.ts        # Deposit operations
-│   ├── useBalance.ts        # USDC balance
-│   └── useAdmin.ts          # Admin functions
+│   ├── usePlans.ts      # Plans từ contract
+│   ├── useDeposit.ts    # openDeposit, withdraw, earlyWithdraw, renew, fetchUserDeposits, fetchDepositDetailsByIds
+│   ├── useBalance.ts    # USDC balance
+│   └── useAdmin.ts      # createPlan, updatePlan, togglePlan, fundInterestVault, withdrawInterestVault, pause, unpause
 ├── pages/
-│   ├── Home/                # Landing page
-│   ├── Plans/               # Browse plans
-│   ├── MyDeposits/          # User deposits
-│   ├── Calculator/          # Interest calculator
-│   └── Admin/               # Admin dashboard
-├── styles/
-│   ├── variables.scss       # Design tokens
-│   └── global.scss          # Global styles
-├── types/                   # TypeScript types
-├── utils/                   # Helper functions
+│   ├── Home/
+│   ├── Plans/           # Danh sách plan + modal deposit
+│   ├── MyDeposits/      # Active / Matured / Đã đóng (lịch sử)
+│   ├── Calculator/
+│   └── Admin/           # AdminDashboard (plans, users, withdrawals, settings)
+├── styles/              # variables, themes, global
+├── types/               # Plan, Deposit, ...
+├── utils/               # formatters, calculator, decodeRevert, constants
 └── data/
-    ├── abi/                 # Contract ABIs
-    └── contracts.ts         # Contract addresses
+    ├── abi/             # SavingsBank, TokenVault, InterestVault, DepositNFT, MockUSDC
+    ├── contracts.ts     # Addresses + ABIs
+    └── planMetadata.ts  # Offchain plan metadata
 ```
 
 ---
 
-## 🔗 Contract Integration
+## 🔗 Contract Integration (tóm tắt)
 
-### Reading Data
+- **Plans:** `savingsBankContract.savingPlans(planId)`, `nextPlanId`
+- **User deposits:** `savingsBankContract.getUserDeposits(address)` → `getDepositDetails(depositId)`
+- **Open deposit:** User approve TokenVault → `savingsBankContract.openDeposit(planId, amountWei, enableAutoRenew)`
+- **Withdraw / Early / Renew:** `withdraw(tokenId)`, `earlyWithdraw(tokenId)`, `autoRenew(tokenId)`
+- **Admin:** `fundVault(amount)`, `withdrawVault(amount)`, `pause()`, `unpause()`, `createPlan`, `updatePlan`, `enablePlan`
 
-```typescript
-// Get all plans
-const plans = await savingsBankContract.getAllPlans();
-
-// Get specific deposit
-const deposit = await savingsBankContract.getDeposit(depositId);
-
-// Calculate interest
-const interest = await savingsBankContract.calculateInterest(depositId);
-```
-
-### Writing Data
-
-```typescript
-// Open deposit (requires approval first)
-await usdcContract.approve(savingsBankAddress, amount);
-await savingsBankContract.openDeposit(planId, amount, enableAutoRenew);
-
-// Withdraw at maturity
-await savingsBankContract.withdraw(depositId);
-
-// Early withdraw (with penalty)
-await savingsBankContract.earlyWithdraw(depositId);
-
-// Renew deposit
-await savingsBankContract.renew(depositId, useCurrentRate);
-```
+Chi tiết logic on-chain: [capstone-defi-savings-protocol/README.md](../capstone-defi-savings-protocol/README.md) và `docs/ARCHITECTURE.md`.
 
 ---
 
-## 🧪 Testing
+## 🧪 Testing (Sepolia)
 
-### Get Test USDC
-
-1. Connect wallet to Sepolia testnet
-2. Visit [MockUSDC on Etherscan](https://sepolia.etherscan.io/address/0xC62464eaD63c27aE68B296522837e923f856fe05#writeContract)
-3. Call `mint(yourAddress, 10000000000)` to get 10,000 USDC
-
-### Test Flow
-
-1. Connect MetaMask to Sepolia
-2. Get test USDC tokens
-3. Browse available plans
-4. Open a deposit
-5. View your deposits
-6. Wait for maturity or withdraw early
+1. Chuyển MetaMask sang **Sepolia**.
+2. Lấy test USDC: dùng script trong protocol (ví dụ `mint_to_address.ts`) hoặc gọi `mint(yourAddress, amount)` trên MockUSDC (6 decimals: 1e6 = 1 USDC).
+3. Trên app: Connect → Plans → Chọn plan → Deposit → My Deposits (xem, rút sớm / rút đúng hạn / gia hạn).
 
 ---
 
-## 📝 Available Scripts
+## 📝 Scripts
 
 ```bash
-# Development
-npm run dev          # Start dev server
-npm run build        # Build for production
-npm run preview      # Preview production build
-
-# Code Quality
-npm run lint         # Run ESLint
+npm run dev      # Dev server (Vite)
+npm run build    # Build production → dist/
+npm run preview  # Preview build
+npm run lint     # ESLint
 ```
 
 ---
 
-## 🌐 Environment Variables
+## 🚀 Deploy lên Vercel
 
-See `.env.example` for all available variables:
+1. **Root Directory:** Nếu repo là cả workspace, trong Vercel chọn root = `capstone-defi-savings-app`.
+2. **Environment Variables:** Thêm tất cả biến `VITE_*` (giống `.env.example`) trong Vercel project.
+3. **Deploy:** Push code hoặc dùng Vercel CLI (`vercel`, `vercel --prod`).
 
-```env
-VITE_USDC_ADDRESS=0xC62464eaD63c27aE68B296522837e923f856fe05
-VITE_VAULT_MANAGER_ADDRESS=0x870d756E4Ec6745C24CE3DAD776cC53ddB51ae62
-VITE_SAVINGS_BANK_ADDRESS=0xB95742736EDeE68c9cb3F9a44D3F04D96F40d7d4
-VITE_CHAIN_ID=11155111
-```
-
----
-
-## 🎯 Key Features Implemented
-
-### Wallet Integration
-- ✅ MetaMask connection
-- ✅ Network detection and switching
-- ✅ Account change handling
-- ✅ Balance tracking
-
-### Plan Management
-- ✅ Fetch all plans from contract
-- ✅ Display plan details (APR, tenor, limits)
-- ✅ Filter enabled plans
-- ✅ Interest estimation calculator
-
-### Deposit Management
-- ✅ Open new deposits
-- ✅ View user deposits
-- ✅ Withdraw at maturity
-- ✅ Early withdrawal with penalty
-- ✅ Deposit renewal
-
-### Admin Panel
-- ✅ Create new plans
-- ✅ Update existing plans
-- ✅ Toggle plan status
-- ✅ View vault statistics
-- ✅ Emergency pause
-
----
-
-## 🎨 UI Components
-
-### Common Components
-- **Button** - Multiple variants and sizes
-- **Header** - Sticky navigation with wallet connection
-- **Footer** - Links and network information
-- **UserInfoWidget** - Quick user stats
-
-### Feature Components
-- **PlanList** - Display all saving plans
-- **MyDeposits** - User's deposit portfolio
-- **ConnectWallet** - Wallet connection flow
-- **WalletInfo** - Connected wallet details
-
----
-
-## 📱 Responsive Design
-
-- ✅ Mobile-first approach
-- ✅ Breakpoints: 480px, 640px, 768px, 1024px, 1280px
-- ✅ Touch-friendly interactions
-- ✅ Optimized for all screen sizes
-
----
-
-## 🔐 Security Considerations
-
-- ✅ Client-side validation
-- ✅ Safe transaction handling
-- ✅ Error boundary implementation
-- ✅ Secure wallet connection
-- ⚠️ Always verify transaction details before signing
-
----
-
-## 🚀 Deployment
-
-### Build for Production
-
-```bash
-npm run build
-```
-
-Output in `dist/` directory.
-
-### Deploy Options
-- Vercel
-- Netlify
-- GitHub Pages
-- IPFS / Fleek
-- Any static hosting
-
----
-
-## 👨‍💻 Development
-
-### Adding New Features
-
-1. Create component in appropriate folder
-2. Add types in `src/types/`
-3. Create custom hook if needed
-4. Update routing in `App.tsx`
-5. Add styles in SCSS module
-
-### Code Style
-- TypeScript strict mode
-- ESLint configuration
-- SCSS modules for styling
-- Functional components with hooks
+Chi tiết từng bước: **[DEPLOY_VERCEL.md](./DEPLOY_VERCEL.md)**.
 
 ---
 
 ## 📄 License
 
-This project is for educational purposes as part of a blockchain development internship capstone project.
+Dự án capstone, mục đích học tập (Blockchain Development Internship).
 
 ---
 
@@ -323,10 +185,7 @@ This project is for educational purposes as part of a blockchain development int
 **Author:** Nguyễn Ngọc Huy  
 **Organization:** AppsCyclone - Blockchain Development Internship  
 **Project:** DeFi Savings Protocol Capstone  
-**Date:** January 2025
+**Date:** January 2026
 
----
-
-> **Status:** ✅ Complete and Ready for Production  
-> **Network:** Sepolia Testnet  
-> **Smart Contracts:** Verified on Etherscan
+> **Status:** ✅ Production-ready (Sepolia)  
+> **Contracts:** [capstone-defi-savings-protocol](../capstone-defi-savings-protocol/)

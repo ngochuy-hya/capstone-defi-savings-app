@@ -1,5 +1,5 @@
 {
-  "address": "0xbf18558adf6BA008eA2c6924D50e980C998313f0",
+  "address": "0x3B6e54bb5B36a89838435EC504cE78B3B7Fd29DC",
   "abi": [
     {
       "inputs": [
@@ -635,6 +635,25 @@
       "inputs": [
         {
           "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "depositOwner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
           "name": "planId",
           "type": "uint256"
         }
@@ -776,19 +795,9 @@
           "internalType": "uint256",
           "name": "tokenId",
           "type": "uint256"
-        },
-        {
-          "internalType": "bool",
-          "name": "useCurrentRate",
-          "type": "bool"
-        },
-        {
-          "internalType": "uint256",
-          "name": "newPlanId",
-          "type": "uint256"
         }
       ],
-      "name": "renew",
+      "name": "autoRenew",
       "outputs": [
         {
           "internalType": "uint256",

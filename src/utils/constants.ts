@@ -5,12 +5,12 @@ export const BASIS_POINTS = 10000;
 export const SECONDS_PER_DAY = 86400;
 export const SECONDS_PER_YEAR = 31536000;
 
-// Contract addresses on Sepolia (Updated: January 29, 2026)
-export const SAVINGS_BANK_ADDRESS = '0xB95742736EDeE68c9cb3F9a44D3F04D96F40d7d4';
-export const VAULT_MANAGER_ADDRESS = '0x870d756E4Ec6745C24CE3DAD776cC53ddB51ae62';
-export const USDC_ADDRESS = '0xC62464eaD63c27aE68B296522837e923f856fe05';
-
-// Admin address (will be fetched from contract owner())
+// Contract addresses on Sepolia (matches deployments/sepolia — January 2026)
+export const SAVINGS_BANK_ADDRESS = '0x3B6e54bb5B36a89838435EC504cE78B3B7Fd29DC';
+export const USDC_ADDRESS = '0xF38A9Ed7840aB6eef41DF9d88b19fFf7443AA656';
+export const TOKEN_VAULT_ADDRESS = '0x3F371D9b7AF25DF7fcE3DEE044a11825ACDeFD64';
+export const INTEREST_VAULT_ADDRESS = '0x5a17868C3d6E1d3f19Ea56c483eA10aE5050051F';
+export const DEPOSIT_NFT_ADDRESS = '0x5f7Ac1Dc1180D652aa06B3eA7017B9E76bc46765';
 
 // Deposit Status
 export const DepositStatus = {
@@ -29,8 +29,8 @@ export const DEPOSIT_STATUS_LABELS = {
   [DepositStatus.Renewed]: 'Renewed',
 };
 
-// Grace period (3 days)
-export const GRACE_PERIOD = 3 * SECONDS_PER_DAY;
+// Auto-renew grace period (2 days after maturity — matches contract)
+export const GRACE_PERIOD = 2 * SECONDS_PER_DAY;
 
 // Default plans (Deployed on Sepolia)
 export const DEFAULT_PLANS = [

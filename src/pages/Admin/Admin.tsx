@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useWallet } from '../../context/WalletContext';
 import { useAdmin } from '../../hooks/useAdmin';
 import { usePlans } from '../../hooks/usePlans';
@@ -7,11 +7,18 @@ import type { Plan } from '../../types';
 import { Button } from '../../components/common/Button/Button';
 import styles from './Admin.module.scss';
 
+type VaultStats = {
+  totalPrincipal: string;
+  totalInterest: string;
+  availableInterest: string;
+  reservedInterest: string;
+} | null;
+
 export const Admin: React.FC = () => {
   const { address, isAdmin } = useWallet();
   const { createPlan, updatePlan, togglePlan, getVaultStats, loading, error, txHash } = useAdmin();
   const { plans, fetchPlans } = usePlans();
-  const [vaultStats, setVaultStats] = useState<any>(null);
+  const [vaultStats, setVaultStats] = useState<VaultStats>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
 
@@ -25,15 +32,15 @@ export const Admin: React.FC = () => {
     penaltyBps: '500',
   });
 
+  const loadVaultStats = useCallback(async () => {
+    const stats = await getVaultStats();
+    setVaultStats(stats);
+  }, [getVaultStats]);
+
   useEffect(() => {
     fetchPlans();
     loadVaultStats();
-  }, []);
-
-  const loadVaultStats = async () => {
-    const stats = await getVaultStats();
-    setVaultStats(stats);
-  };
+  }, [fetchPlans, loadVaultStats]);
 
   if (!isAdmin) {
     return (

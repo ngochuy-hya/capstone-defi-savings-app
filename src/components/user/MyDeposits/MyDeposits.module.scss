@@ -77,10 +77,29 @@
   padding: $spacing-6 0;
   padding-bottom: $spacing-4;
   border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-  
+
   svg {
     color: $primary-400;
   }
+}
+
+.sectionTitleClosed {
+  display: flex;
+  align-items: center;
+  gap: $spacing-3;
+  font-size: $text-xl;
+  font-weight: 600;
+  color: rgba(148, 163, 184, 0.9);
+  margin-bottom: $spacing-2;
+  padding: $spacing-6 0 $spacing-2;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.sectionDescClosed {
+  color: $text-muted;
+  font-size: $text-sm;
+  margin-bottom: $spacing-6;
+  padding: 0;
 }
 
 .section {
@@ -140,6 +159,17 @@
   &.renewed {
     border-color: rgba(139, 92, 246, 0.2);
   }
+
+  &.cardClosed {
+    opacity: 0.75;
+    border-color: rgba(148, 163, 184, 0.15);
+
+    &:hover {
+      transform: none;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      border-color: rgba(148, 163, 184, 0.2);
+    }
+  }
 }
 
 .cardTop {
@@ -155,6 +185,7 @@
   display: flex;
   align-items: center;
   gap: $spacing-3;
+  flex-wrap: wrap;
 }
 
 .badge {
@@ -201,6 +232,12 @@
     border: 2px solid rgba(139, 92, 246, 0.6);
     text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
   }
+
+  &.badgeClosed {
+    background: rgba(148, 163, 184, 0.2);
+    color: rgba(148, 163, 184, 0.95);
+    border: 1px solid rgba(148, 163, 184, 0.3);
+  }
 }
 
 .depositId {
@@ -210,12 +247,158 @@
   font-family: $font-mono;
 }
 
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: $rounded-full;
+  font-size: $text-xs;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: $text-primary;
+  white-space: nowrap;
+}
+
+.chipAutoRenew {
+  background: rgba(167, 139, 250, 0.12);
+  border-color: rgba(167, 139, 250, 0.28);
+}
+
 .daysLeft {
   color: $primary-300;
   font-size: $text-sm;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+.heroRow {
+  display: grid;
+  grid-template-columns: 1fr 180px;
+  gap: $spacing-6;
+  align-items: center;
+  margin-bottom: $spacing-6;
+
+  @media (max-width: $breakpoint-md) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.planInfo {
+  display: flex;
+  gap: $spacing-4;
+  align-items: flex-start;
+}
+
+.planImageWrap {
+  width: 92px;
+  height: 92px;
+  border-radius: $rounded-xl;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(15, 23, 42, 0.4);
+  flex-shrink: 0;
+}
+
+.planImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.planText {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+  min-width: 0;
+}
+
+.planTitle {
+  color: $text-primary;
+  font-size: $text-xl;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.planSubtitle {
+  color: $text-muted;
+  font-size: $text-sm;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.planDescription {
+  color: $text-primary;
+  opacity: 0.85;
+  font-size: $text-sm;
+  line-height: 1.4;
+}
+
+.planHighlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-2;
+  margin-top: $spacing-1;
+}
+
+.progressWrap {
+  display: flex;
+  justify-content: flex-end;
+
+  @media (max-width: $breakpoint-md) {
+    justify-content: flex-start;
+  }
+}
+
+.progressRing {
+  --p: 0;
+  width: 160px;
+  height: 160px;
+  border-radius: 999px;
+  background:
+    conic-gradient(var(--accent-primary) calc(var(--p) * 1%), rgba(255, 255, 255, 0.08) 0);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+
+  @media (max-width: $breakpoint-md) {
+    width: 140px;
+    height: 140px;
+  }
+}
+
+.progressInner {
+  width: calc(100% - 18px);
+  height: calc(100% - 18px);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: $spacing-4;
+}
+
+.progressValue {
+  color: $text-primary;
+  font-size: $text-3xl;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.progressLabel {
+  margin-top: $spacing-2;
+  color: $text-muted;
+  font-size: $text-xs;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .mainAmount {
@@ -339,6 +522,23 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-3;
+}
+
+.penaltyBox {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(245, 158, 11, 0.22);
+  border-radius: $rounded-xl;
+  padding: $spacing-5;
+  margin-bottom: $spacing-6;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.penaltyRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: $spacing-3;
+  padding: $spacing-2 0;
 }
 
 .loadingContainer {

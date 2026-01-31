@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useWallet } from '../context/WalletContext';
 import { useContracts } from '../context/ContractContext';
+import { CONTRACTS } from '../data/contracts';
 
 export const useAdmin = () => {
   const { provider } = useWallet();
-  const { savingsBankContract, tokenVaultContract, interestVaultContract } = useContracts();
+  const { savingsBankContract, tokenVaultContract, interestVaultContract, usdcContract } = useContracts();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [txHash, setTxHash] = useState<string | null>(null);
@@ -229,9 +230,11 @@ export const useAdmin = () => {
   };
 
   // Fund interest vault (admin function to add liquidity)
+  // Flow: admin approves InterestVault to spend USDC, then calls SavingsBank.fundVault(amount).
+  // SavingsBank (owner of InterestVault) calls InterestVault.deposit(admin, amount) to pull USDC.
   const fundInterestVault = async (amount: string) => {
-    if (!provider || !interestVaultContract) {
-      setError('Provider or contract not available');
+    if (!provider || !savingsBankContract || !usdcContract) {
+      setError('Provider or contracts not available');
       return false;
     }
 
@@ -241,13 +244,17 @@ export const useAdmin = () => {
       setTxHash(null);
 
       const signer = await provider.getSigner();
-      const contract = interestVaultContract.connect(signer);
-
       const amountWei = BigInt(Math.floor(parseFloat(amount) * 1000000));
-      const signerAddress = await signer.getAddress();
+      const interestVaultAddress = CONTRACTS.InterestVault.address;
 
-      // InterestVault.deposit(from, amount) - requires USDC approval first
-      const tx = await contract.deposit(signerAddress, amountWei);
+      // 1. Approve InterestVault to pull USDC from admin
+      const usdcWithSigner = usdcContract.connect(signer);
+      const approveTx = await usdcWithSigner.approve(interestVaultAddress, amountWei);
+      await approveTx.wait();
+
+      // 2. SavingsBank.fundVault(amount) → calls InterestVault.deposit(msg.sender, amount)
+      const savingsBankWithSigner = savingsBankContract.connect(signer);
+      const tx = await savingsBankWithSigner.fundVault(amountWei);
       setTxHash(tx.hash);
       await tx.wait();
 
@@ -261,6 +268,40 @@ export const useAdmin = () => {
     }
   };
 
+  // Withdraw from InterestVault (admin only — only available balance, not reserved)
+  const withdrawInterestVault = async (amount: string) => {
+    if (!provider || !savingsBankContract) {
+      setError('Provider or contract not available');
+      return false;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      setTxHash(null);
+
+      const amountWei = BigInt(Math.floor(parseFloat(amount) * 1000000));
+      if (amountWei <= 0n) {
+        setError('Amount must be greater than 0');
+        setLoading(false);
+        return false;
+      }
+
+      const savingsBankWithSigner = savingsBankContract.connect(await provider.getSigner());
+      const tx = await savingsBankWithSigner.withdrawVault(amountWei);
+      setTxHash(tx.hash);
+      await tx.wait();
+
+      setLoading(false);
+      return true;
+    } catch (err: any) {
+      console.error('Withdraw interest vault error:', err);
+      setError(err.message || 'Failed to withdraw from interest vault');
+      setLoading(false);
+      return false;
+    }
+  };
+
   return {
     createPlan,
     updatePlan,
@@ -269,6 +310,7 @@ export const useAdmin = () => {
     emergencyPause,
     unpause,
     fundInterestVault,
+    withdrawInterestVault,
     loading,
     error,
     txHash,
